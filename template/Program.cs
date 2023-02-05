@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -20,32 +21,49 @@ namespace RedShelly
             bool instanceActive = false;
 
             Console.Title = $"Redshell Restarter - By Daanvy (Melon) [game: {(instanceActive == true ? "found" : "not found")}]";
-            Console.BackgroundColor = ConsoleColor.Red;
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.WindowWidth = 70;
+            Console.WindowHeight = 40;
             
             Thread checker = new Thread(CheckInstance) { IsBackground = true };
             bool debounce = false;
-            Console.WriteLine($"Redshell EFTE Restarter v1");
-            Console.WriteLine($"Made with <3 by Daanvy (twitch.tv/daanvy)\n");
-            Console.WriteLine($"Press 0 (zero) to restart game\n");
+            void clr()
+            {
+                Console.Clear();
+            }
 
+            void set()
+            {
+                clr();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($"Redshell EFTE Restarter v1");
+                Console.WriteLine($"Made with <3 by Daanvy (twitch.tv/daanvy)\n");
+                Console.WriteLine($"Press 0 (zero) to restart game\n");
+            }
+            set();
             checker.Start();
             while (true)
             {
                 if (GetAsyncKeyState(Keys.D0) < 0 && debounce == false)
                 {
-                    Console.WriteLine($"{GetAsyncKeyState(Keys.D0)} : Key pressed");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"Key pressed : {GetAsyncKeyState(Keys.D0)}");
                     debounce = true;
                     // handle code here
 
                     if(instanceActive == true)
                     {
-                        Console.WriteLine("Game loc maybe: " + GetExodus().MainModule.FileName);
                         string gamePath = GetExodus().MainModule.FileName;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("proc exec loc: " + gamePath);
                         KillExodus();
                         do
                         {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.WriteLine("Waiting for process to end...");
+                            Thread.Sleep(500);
                         } while (GetExodus() != null);
+                        Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("Starting game...");
                         StartExodus(gamePath);
                     }
@@ -62,22 +80,13 @@ namespace RedShelly
                 {
                     if (GetExodus() == null)
                     {
-#if DEBUG
-                        Console.WriteLine($"[DEBUG] instance inactive");
-#endif
                         instanceActive = false;
 
                     }
                     else
                     {
-#if DEBUG
-                        Console.WriteLine($"[DEBUG] instance active");
-#endif
                         instanceActive = true;
                     }
-#if DEBUG
-                    Console.WriteLine($"STATE: {instanceActive}");
-#endif
                     Console.Title = $"Redshell Restarter - By Daanvy (Melon) [game: {(instanceActive == true ? "found" : "not found")}]";
                     Thread.Sleep(500);
                 }
@@ -86,9 +95,17 @@ namespace RedShelly
 
             Process GetExodus()
             {
-                if (Process.GetProcessesByName("efte").Length > 0)
+                //Console.WriteLine("Length: " + Process.GetProcessesByName("efte").Length);
+                //foreach(var proc in Process.GetProcessesByName("efte"))
+                //{
+                //    Console.WriteLine($": {proc.ProcessName} | {proc.Id}");
+                //    return null;
+                //}
+                //return null;
+                var procs = Process.GetProcessesByName("efte");
+                if (procs.Length > 0)
                 {
-                    return Process.GetProcessesByName("efte")[0];
+                    return procs[0];
                 }
                 else
                 {
@@ -99,6 +116,7 @@ namespace RedShelly
             {
                 if (GetExodus() == null)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Tried to kill efte, but no instance found...");
                     return;
                 }
@@ -112,6 +130,7 @@ namespace RedShelly
             {
                 if (GetExodus() != null)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Tried to start efte, but at least 1 active instance was found...");
                     return;
                 }
