@@ -17,7 +17,9 @@ namespace RedShelly
         static extern short GetAsyncKeyState(Keys vKeys);
         static void Main(string[] args)
         {
-            Console.Title = "Redshell Restarter - By Daanvy (Melon)";
+            bool instanceActive = false;
+
+            Console.Title = $"Redshell Restarter - By Daanvy (Melon) [game: {(instanceActive == true ? "found" : "not found")}]";
             Console.BackgroundColor = ConsoleColor.Red;
             
             Thread checker = new Thread(CheckInstance) { IsBackground = true };
@@ -25,11 +27,8 @@ namespace RedShelly
             Console.WriteLine($"Redshell EFTE Restarter v1");
             Console.WriteLine($"Made with <3 by Daanvy (twitch.tv/daanvy)\n");
             Console.WriteLine($"Press 0 (zero) to restart game\n");
-            Console.WriteLine($"(Example: C:\\Program Files (x86)\\Steam\\steamapps\\common\\Exodus from the Earth)");
-            Console.WriteLine($"\nPress any key to continue...");
-            Console.ReadKey();
+
             checker.Start();
-            bool instanceActive = false;
             while (true)
             {
                 if (GetAsyncKeyState(Keys.D0) < 0 && debounce == false)
@@ -67,6 +66,7 @@ namespace RedShelly
                         Console.WriteLine($"[DEBUG] instance inactive");
 #endif
                         instanceActive = false;
+
                     }
                     else
                     {
@@ -78,6 +78,7 @@ namespace RedShelly
 #if DEBUG
                     Console.WriteLine($"STATE: {instanceActive}");
 #endif
+                    Console.Title = $"Redshell Restarter - By Daanvy (Melon) [game: {(instanceActive == true ? "found" : "not found")}]";
                     Thread.Sleep(500);
                 }
 
