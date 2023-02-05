@@ -26,10 +26,9 @@ namespace RedShelly
             Console.WriteLine($"Made with <3 by Daanvy (twitch.tv/daanvy)\n");
             Console.WriteLine($"Press 0 (zero) to restart game\n");
             Console.WriteLine($"(Example: C:\\Program Files (x86)\\Steam\\steamapps\\common\\Exodus from the Earth)");
-            Console.WriteLine($"Enter game location: ");
-            string gamePath = Console.ReadLine();
+            Console.WriteLine($"\nPress any key to continue...");
+            Console.ReadKey();
             checker.Start();
-
             bool instanceActive = false;
             while (true)
             {
@@ -41,6 +40,8 @@ namespace RedShelly
 
                     if(instanceActive == true)
                     {
+                        Console.WriteLine("Game loc maybe: " + GetExodus().MainModule.FileName);
+                        string gamePath = GetExodus().MainModule.FileName;
                         KillExodus();
                         do
                         {
@@ -84,20 +85,13 @@ namespace RedShelly
 
             Process GetExodus()
             {
-                if (Process.GetProcessesByName("efte").Length < 1)
+                if (Process.GetProcessesByName("efte").Length > 0)
                 {
-                    return null;
+                    return Process.GetProcessesByName("efte")[0];
                 }
                 else
                 {
-                    if(Process.GetProcessesByName("efte")[0] == null)
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        return Process.GetProcessesByName("efte")[0];
-                    }
+                    return null;
                 }
             }
             void KillExodus()
@@ -122,7 +116,7 @@ namespace RedShelly
                 }
                 else
                 {
-                    Process.Start(path + "\\bin\\efte.exe");
+                    Process.Start(path);
                 }
             }
         }
